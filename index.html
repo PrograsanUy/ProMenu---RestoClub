@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, initial-scale=1.0">
+  <title>Generador de Menú Diario</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Horizon&family=Josefin+Sans&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Josefin Sans', sans-serif;
+      background: #111;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-width: 1080px;
+    }
+    .contenedor {
+      width: 1080px;
+      height: 1920px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: black;
+    }
+    .fondo {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    .overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1;
+    }
+    .contenido {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      width: 100%;
+    }
+    .logo {
+      width: 130px;
+      position: absolute;
+      margin-top: -50px;
+      margin-left: -65px;
+    }
+    .titulo {
+      font-family: 'Anton', sans-serif;
+      font-size: 96px;
+      margin-bottom: 0px;
+      margin-top: 80px;
+    }
+    .fecha-decorada {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Horizon', sans-serif;
+      font-size: 35px;
+      margin-bottom: 60px;
+    }
+    .puntos {
+      font-size: 55px;
+      margin: 0 12px;
+      letter-spacing: 4px;
+    }
+    .plato-img {
+      width: 820px;
+      height: 820px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 36px solid rgba(255, 255, 255, 0.3);
+      margin: 0 auto 70px;
+    }
+    .plato-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .nombre-plato {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 35px;
+      margin-top: 0px;
+      width: 80%;
+      margin-left: 10%;
+      text-transform: uppercase;
+      margin-bottom: 50px;
+    }
+    .telefono {
+      font-family: 'Anton', sans-serif;
+      font-size: 65px;
+      padding: 12px 30px;
+      border: 2px solid white;
+      border-radius: 10px;
+      display: inline-block;
+      margin-bottom: 30px;
+    }
+    .direccion {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 30px;
+      text-transform: uppercase;
+    }
+    .inputs {
+      margin-top: 40px;
+      text-align: center;
+    }
+    .inputs input[type="file"],
+    .inputs input[type="text"],
+    .inputs input[type="number"] {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    .boton-descarga {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 18px;
+      font-family: 'Anton', sans-serif;
+      background-color: white;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="contenedor" id="preview">
+  <img id="bg" class="fondo" src="" alt="Fondo">
+  <div class="overlay"></div>
+  <div class="contenido">
+    <img class="logo" src="LogoClubBlancoPNG.png" alt="Logo fijo">
+    <div class="titulo">PLATO DEL DÍA</div>
+    <div class="fecha-decorada">
+      <span class="puntos">&#8226;&#8226;&#8226;</span>
+      <span id="fecha">17.07</span>
+      <span class="puntos">&#8226;&#8226;&#8226;</span>
+    </div>
+    <div class="plato-img">
+      <img id="plato-img" src="" alt="Plato">
+    </div>
+    <div class="nombre-plato" id="nombre-plato">MILANESA NAPOLITANA CON PURÉ</div>
+    <div class="telefono" id="telefono">092 228 587</div>
+    <div class="direccion">25 DE MAYO, 550</div>
+  </div>
+</div>
+
+<div class="inputs">
+  <input type="file" accept="image/*" id="imagenInput">
+  <input type="text" id="nombreInput" placeholder="Nombre del plato">
+  <input type="text" id="fechaInput" placeholder="Fecha (dd.mm)">
+  <input type="number" id="telefonoInput" placeholder="Teléfono" maxlength="11">
+  <br>
+  <button class="boton-descarga" onclick="descargarImagen()">Descargar imagen</button>
+</div>
+
+<script>
+  const imagenInput = document.getElementById('imagenInput');
+  const nombreInput = document.getElementById('nombreInput');
+  const fechaInput = document.getElementById('fechaInput');
+  const telefonoInput = document.getElementById('telefonoInput');
+
+  const fondo = document.getElementById('bg');
+  const platoImg = document.getElementById('plato-img');
+  const nombrePlato = document.getElementById('nombre-plato');
+  const fecha = document.getElementById('fecha');
+  const telefono = document.getElementById('telefono');
+
+  imagenInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      fondo.src = url;
+      platoImg.src = url;
+    }
+  });
+
+  nombreInput.addEventListener('input', () => {
+    nombrePlato.textContent = nombreInput.value.toUpperCase();
+  });
+
+  fechaInput.addEventListener('input', () => {
+    fecha.textContent = fechaInput.value;
+  });
+
+  telefonoInput.addEventListener('input', () => {
+    const val = telefonoInput.value.replace(/[^0-9]/g, '').slice(0, 11);
+    telefonoInput.value = val;
+    telefono.textContent = val;
+  });
+
+  function descargarImagen() {
+    const preview = document.getElementById('preview');
+    html2canvas(preview, {
+      width: 1080,
+      height: 1920,
+      scale: 1,
+      useCORS: true
+    }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'menu-del-dia.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
+</script>
+
+</body>
+</html>
