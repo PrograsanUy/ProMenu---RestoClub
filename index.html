@@ -20,14 +20,13 @@
       flex-direction: column;
       align-items: center;
       padding: 20px;
-      min-width: 1080px;
     }
     .contenedor {
       width: 1080px;
       height: 1920px;
       position: relative;
       overflow: hidden;
-      display: flex;
+      display: none; /* Oculto por defecto */
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -63,7 +62,6 @@
     .titulo {
       font-family: 'Anton', sans-serif;
       font-size: 96px;
-      margin-bottom: 0px;
       margin-top: 80px;
     }
     .fecha-decorada {
@@ -95,11 +93,9 @@
     .nombre-plato {
       font-family: 'Josefin Sans', sans-serif;
       font-size: 35px;
-      margin-top: 0px;
       width: 80%;
-      margin-left: 10%;
+      margin: 0 auto 50px;
       text-transform: uppercase;
-      margin-bottom: 50px;
     }
     .telefono {
       font-family: 'Anton', sans-serif;
@@ -117,31 +113,61 @@
       font-size: 30px;
       text-transform: uppercase;
     }
-    .inputs {
-      margin-top: 40px;
-      text-align: center;
+    .form-wrapper {
+      background: white;
+      color: black;
+      padding: 30px;
+      margin-top: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      max-width: 500px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
     }
-    .inputs input[type="file"],
-    .inputs input[type="text"],
-    .inputs input[type="number"] {
-      margin: 10px;
-      padding: 10px;
+    .form-wrapper input[type="file"],
+    .form-wrapper input[type="text"],
+    .form-wrapper input[type="number"] {
+      width: 100%;
+      padding: 12px;
       font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
     }
     .boton-descarga {
-      margin-top: 20px;
+      margin-top: 10px;
       padding: 12px 25px;
       font-size: 18px;
       font-family: 'Anton', sans-serif;
-      background-color: white;
-      color: black;
+      background-color: black;
+      color: white;
       border: none;
       border-radius: 10px;
       cursor: pointer;
+      width: 100%;
+    }
+
+    @media (max-width: 600px) {
+      .contenedor {
+        width: 100%;
+        height: auto;
+        transform: scale(0.3);
+        transform-origin: top center;
+      }
     }
   </style>
 </head>
 <body>
+
+<div class="form-wrapper">
+  <input type="file" accept="image/*" id="imagenInput">
+  <input type="text" id="nombreInput" placeholder="Nombre del plato">
+  <input type="text" id="fechaInput" placeholder="Fecha (dd.mm)">
+  <input type="number" id="telefonoInput" placeholder="Teléfono" maxlength="11">
+  <button class="boton-descarga" onclick="descargarImagen()">Descargar imagen</button>
+</div>
 
 <div class="contenedor" id="preview">
   <img id="bg" class="fondo" src="" alt="Fondo">
@@ -163,15 +189,6 @@
   </div>
 </div>
 
-<div class="inputs">
-  <input type="file" accept="image/*" id="imagenInput">
-  <input type="text" id="nombreInput" placeholder="Nombre del plato">
-  <input type="text" id="fechaInput" placeholder="Fecha (dd.mm)">
-  <input type="number" id="telefonoInput" placeholder="Teléfono" maxlength="11">
-  <br>
-  <button class="boton-descarga" onclick="descargarImagen()">Descargar imagen</button>
-</div>
-
 <script>
   const imagenInput = document.getElementById('imagenInput');
   const nombreInput = document.getElementById('nombreInput');
@@ -183,6 +200,7 @@
   const nombrePlato = document.getElementById('nombre-plato');
   const fecha = document.getElementById('fecha');
   const telefono = document.getElementById('telefono');
+  const preview = document.getElementById('preview');
 
   imagenInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -208,18 +226,21 @@
   });
 
   function descargarImagen() {
-    const preview = document.getElementById('preview');
-    html2canvas(preview, {
-      width: 1080,
-      height: 1920,
-      scale: 1,
-      useCORS: true
-    }).then(canvas => {
-      const link = document.createElement('a');
-      link.download = 'menu-del-dia.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    });
+    preview.style.display = "flex"; // Mostrar preview antes de capturarlo
+
+    setTimeout(() => {
+      html2canvas(preview, {
+        width: 1080,
+        height: 1920,
+        scale: 1,
+        useCORS: true
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'menu-del-dia.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }, 200); // Esperar a que el DOM actualice la visibilidad
   }
 </script>
 
