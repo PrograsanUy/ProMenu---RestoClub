@@ -2,171 +2,33 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=1080, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="estilos.css">
   <title>Generador de Menú Diario</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Horizon&family=Josefin+Sans&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Josefin Sans', sans-serif;
-      background: #111;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-    .contenedor {
-      width: 1080px;
-      height: 1920px;
-      position: relative;
-      overflow: hidden;
-      display: none; /* Oculto por defecto */
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      background: black;
-    }
-    .fondo {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 0;
-    }
-    .overlay {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.6);
-      z-index: 1;
-    }
-    .contenido {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      width: 100%;
-    }
-    .logo {
-      width: 130px;
-      position: absolute;
-      margin-top: -35px;
-      margin-left: -65px;
-    }
-    .titulo {
-      font-family: 'Anton', sans-serif;
-      font-size: 96px;
-      margin-top: 80px;
-    }
-    .fecha-decorada {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Horizon', sans-serif;
-      font-size: 35px;
-      margin-bottom: 60px;
-    }
-    .puntos {
-      font-size: 55px;
-      margin: 0 12px;
-      letter-spacing: 4px;
-    }
-    .plato-img {
-      width: 820px;
-      height: 820px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 36px solid rgba(255, 255, 255, 0.3);
-      margin: 0 auto 70px;
-    }
-    .plato-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .nombre-plato {
-      font-family: 'Josefin Sans', sans-serif;
-      font-size: 35px;
-      width: 80%;
-      margin: 0 auto 50px;
-      text-transform: uppercase;
-    }
-    .telefono {
-      font-family: 'Anton', sans-serif;
-      font-size: 65px;
-      color: white;
-      text-decoration: none;
-      padding: 12px 30px;
-      border: 2px solid white;
-      border-radius: 10px;
-      display: inline-block;
-      margin-bottom: 30px;
-    }
-    .direccion {
-      font-family: 'Josefin Sans', sans-serif;
-      font-size: 30px;
-      text-transform: uppercase;
-    }
-    .form-wrapper {
-      background: white;
-      color: black;
-      padding: 30px;
-      margin-top: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
-      max-width: 500px;
-      width: 90%;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      align-items: center;
-    }
-    .form-wrapper input[type="file"],
-    .form-wrapper input[type="text"],
-    .form-wrapper input[type="number"] {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    .boton-descarga {
-      margin-top: 10px;
-      padding: 12px 25px;
-      font-size: 18px;
-      font-family: 'Anton', sans-serif;
-      background-color: black;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    @media (max-width: 600px) {
-      .contenedor {
-        width: 100%;
-        height: auto;
-        transform: scale(0.3);
-        transform-origin: top center;
-      }
-    }
-  </style>
 </head>
 <body>
+
+<!-- Agregar dentro del <body> -->
+<header class="header-container">
+  <div class="header-title">ProMenu - Resto Club</div>
+  <nav class="header-nav">
+    <a href="#" class="nav-item active">Menú</a>
+    <a href="#" class="nav-item">Estado</a>
+    <a href="#" class="nav-item">
+      <i class="fas fa-image"></i>
+    </a>
+  </nav>
+</header>
+
 
 <div class="form-wrapper">
   <input type="file" accept="image/*" id="imagenInput">
   <input type="text" id="nombreInput" placeholder="Nombre del plato">
-  <input type="text" id="fechaInput" placeholder="Fecha (dd.mm)">
-  <input type="number" id="telefonoInput" placeholder="Teléfono" maxlength="11">
-  <button class="boton-descarga" onclick="descargarImagen()">Descargar imagen</button>
+  <!-- <input type="number" id="telefonoInput" placeholder="Teléfono" maxlength="11"> -->
+  <button id="descargarBtn" onclick="descargarImagen()" disabled>Descargar imagen</button>
 </div>
 
 <div class="contenedor" id="preview">
@@ -201,6 +63,9 @@
   const fecha = document.getElementById('fecha');
   const telefono = document.getElementById('telefono');
   const preview = document.getElementById('preview');
+  const descargarBtn = document.getElementById('descargarBtn');
+
+  let imagenCargada = false;
 
   imagenInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -208,6 +73,11 @@
       const url = URL.createObjectURL(file);
       fondo.src = url;
       platoImg.src = url;
+      imagenCargada = true;
+      descargarBtn.disabled = false;
+    } else {
+      imagenCargada = false;
+      descargarBtn.disabled = true;
     }
   });
 
@@ -215,19 +85,20 @@
     nombrePlato.textContent = nombreInput.value.toUpperCase();
   });
 
-  fechaInput.addEventListener('input', () => {
-    fecha.textContent = fechaInput.value;
-  });
+  // fechaInput.addEventListener('input', () => {
+  //   fecha.textContent = fechaInput.value;
+  // });
 
-  telefonoInput.addEventListener('input', () => {
-    const val = telefonoInput.value.replace(/[^0-9]/g, '').slice(0, 11);
-    telefonoInput.value = val;
-    telefono.textContent = val;
-  });
+  // telefonoInput.addEventListener('input', () => {
+  //   const val = telefonoInput.value.replace(/[^0-9]/g, '').slice(0, 11);
+  //   telefonoInput.value = val;
+  //   telefono.textContent = val;
+  // });
 
   function descargarImagen() {
-    preview.style.display = "flex"; // Mostrar preview antes de capturarlo
+    if (!imagenCargada) return;
 
+    preview.style.display = "flex";
     setTimeout(() => {
       html2canvas(preview, {
         width: 1080,
@@ -240,8 +111,16 @@
         link.href = canvas.toDataURL('image/png');
         link.click();
       });
-    }, 200); // Esperar a que el DOM actualice la visibilidad
+    }, 100); // tiempo para asegurar que se renderice bien
   }
+
+    window.addEventListener('DOMContentLoaded', () => {
+    const hoy = new Date();
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const fechaFormateada = `${dia}.${mes}`;
+    document.getElementById('fecha').textContent = fechaFormateada;
+  });
 </script>
 
 </body>
