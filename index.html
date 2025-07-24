@@ -1,210 +1,127 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ProMenu - Generador de Menú Diario</title>
-  <link rel="stylesheet" href="estilos.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="estilos.css">
+  <title>Generador de Menú Diario</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Horizon&family=Josefin+Sans&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-    const supabaseUrl = 'https://fsfavxsclfnhbzookamh.supabase.co' // Reemplazar
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZmF2eHNjbGZuaGJ6b29rYW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzODgxMDQsImV4cCI6MjA2ODk2NDEwNH0.Yc1Ock40tufgy5KKl2-1Btc-eurGcCY8QuNFYn5fK30' // Reemplazar
-    const supabase = createClient(supabaseUrl, supabaseKey)
-
-    async function obtenerConfiguracion() {
-      const { data, error } = await supabase.from('configuracion').select('*').single()
-      if (data) {
-        document.querySelector('.logo').src = data.logo_url
-        document.getElementById('telefono').textContent = data.telefono
-        document.querySelector('.direccion').textContent = data.direccion
-
-        // Actualizar inputs del panel de configuración
-        document.getElementById('telefonoInputConfig').value = data.telefono
-        document.getElementById('direccionInputConfig').value = data.direccion
-        if (data.logo_url) {
-          document.getElementById('previewLogo').src = data.logo_url
-        }
-      }
-    }
-
-    async function guardarConfiguracion() {
-      const telefono = document.getElementById('telefonoInputConfig').value
-      const direccion = document.getElementById('direccionInputConfig').value
-      const logoFile = document.getElementById('logoInput').files[0]
-
-      let logo_url = null
-
-      if (logoFile) {
-        const { data, error } = await supabase.storage.from('imagenes').upload('logo.png', logoFile, {
-          cacheControl: '3600',
-          upsert: true
-        })
-        if (!error) {
-          const { data: publicUrl } = supabase.storage.from('imagenes').getPublicUrl('logo.png')
-          logo_url = publicUrl.publicUrl
-          localStorage.setItem('logo_url', logo_url)
-          document.querySelector('.logo').src = logo_url
-          document.getElementById('previewLogo').src = logo_url
-        }
-      }
-
-      const { error: updateError } = await supabase
-        .from('configuracion')
-        .update({
-          telefono,
-          direccion,
-          ...(logo_url ? { logo_url } : {})
-        })
-        .eq('id', 1) // Reemplazar con el ID real si lo tenés
-
-      if (!updateError) {
-        alert('Configuración guardada correctamente')
-        document.getElementById('telefono').textContent = telefono
-        document.querySelector('.direccion').textContent = direccion
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      obtenerConfiguracion()
-
-      const hoy = new Date()
-      const dia = String(hoy.getDate()).padStart(2, '0')
-      const mes = String(hoy.getMonth() + 1).padStart(2, '0')
-      document.getElementById('fecha').textContent = `${dia}.${mes}`
-
-      document.getElementById('guardarConfigBtn').addEventListener('click', guardarConfiguracion)
-    })
-  </script>
 </head>
 <body>
 
-  <header class="header-container">
-    <div class="header-title">ProMenu - Resto Club</div>
-    <nav class="header-nav">
-      <a href="#menu" class="nav-item active">Menú</a>
-      <a href="#galeria" class="nav-item"><i class="fas fa-image"></i></a>
-      <a href="#config" class="nav-item"><i class="fas fa-cog"></i></a>
-    </nav>
-  </header>
+<!-- Agregar dentro del <body> -->
+<header class="header-container">
+  <div class="header-title">ProMenu - Resto Club</div>
+  <nav class="header-nav">
+    <a href="#" class="nav-item active">Menú</a>
+    <!-- <a href="#" class="nav-item">Estado</a> -->
+    <a href="#" class="nav-item">
+      <i class="fas fa-image"></i>
+    </a>
+  </nav>
+</header>
 
-  <!-- SECCIÓN: MENÚ -->
-  <section id="menu">
-    <div class="form-wrapper">
-      <input type="file" accept="image/*" id="imagenInput">
-      <input type="text" id="nombreInput" placeholder="Nombre del plato">
-      <button id="descargarBtn" onclick="descargarImagen()" disabled>Descargar imagen</button>
+
+<div class="form-wrapper">
+  <input type="file" accept="image/*" id="imagenInput">
+  <input type="text" id="nombreInput" placeholder="Nombre del plato">
+  <!-- <input type="number" id="telefonoInput" placeholder="Teléfono" maxlength="11"> -->
+  <button id="descargarBtn" onclick="descargarImagen()" disabled>Descargar imagen</button>
+</div>
+
+<div class="contenedor" id="preview">
+  <img id="bg" class="fondo" src="" alt="Fondo">
+  <div class="overlay"></div>
+  <div class="contenido">
+    <img class="logo" src="LogoClubBlancoPNG.png" alt="Logo fijo">
+    <div class="titulo">PLATO DEL DÍA</div>
+    <div class="fecha-decorada">
+      <span class="puntos">&#8226;&#8226;&#8226;</span>
+      <span id="fecha">17.07</span>
+      <span class="puntos">&#8226;&#8226;&#8226;</span>
     </div>
-
-    <div class="contenedor" id="preview">
-      <img id="bg" class="fondo" src="" alt="Fondo">
-      <div class="overlay"></div>
-      <div class="contenido">
-        <img class="logo" src="" alt="Logo">
-        <div class="titulo">PLATO DEL DÍA</div>
-        <div class="fecha-decorada">
-          <span class="puntos">&#8226;&#8226;&#8226;</span>
-          <span id="fecha">17.07</span>
-          <span class="puntos">&#8226;&#8226;&#8226;</span>
-        </div>
-        <div class="plato-img">
-          <img id="plato-img" src="" alt="Plato">
-        </div>
-        <div class="nombre-plato" id="nombre-plato">MILANESA NAPOLITANA CON PURÉ</div>
-        <div class="telefono" id="telefono"></div>
-        <div class="direccion"></div>
-      </div>
+    <div class="plato-img">
+      <img id="plato-img" src="" alt="Plato">
     </div>
-  </section>
+    <div class="nombre-plato" id="nombre-plato">MILANESA NAPOLITANA CON PURÉ</div>
+    <div class="telefono" id="telefono">092 228 587</div>
+    <div class="direccion">25 DE MAYO, 550</div>
+  </div>
+</div>
 
-  <!-- SECCIÓN: GALERÍA -->
-  <section id="galeria" style="display: none;">
-    <h2>Galería de Platos</h2>
-    <!-- Acá irían las imágenes de la sesión de fotos -->
-  </section>
+<script>
+  const imagenInput = document.getElementById('imagenInput');
+  const nombreInput = document.getElementById('nombreInput');
+  const fechaInput = document.getElementById('fechaInput');
+  const telefonoInput = document.getElementById('telefonoInput');
 
-  <!-- SECCIÓN: CONFIGURACIÓN -->
-  <section id="config" style="display: none;">
-    <h2>Configuración</h2>
-    <label>Logo: <input type="file" id="logoInput" accept="image/*"></label>
-    <img id="previewLogo" style="max-height: 100px; display:block; margin-top: 10px;">
-    <br>
-    <label>Dirección: <input type="text" id="direccionInputConfig"></label><br><br>
-    <label>Teléfono: <input type="text" id="telefonoInputConfig"></label><br><br>
-    <button id="guardarConfigBtn">Guardar configuración</button>
-  </section>
+  const fondo = document.getElementById('bg');
+  const platoImg = document.getElementById('plato-img');
+  const nombrePlato = document.getElementById('nombre-plato');
+  const fecha = document.getElementById('fecha');
+  const telefono = document.getElementById('telefono');
+  const preview = document.getElementById('preview');
+  const descargarBtn = document.getElementById('descargarBtn');
 
-  <script>
-    const imagenInput = document.getElementById('imagenInput');
-    const nombreInput = document.getElementById('nombreInput');
-    const fondo = document.getElementById('bg');
-    const platoImg = document.getElementById('plato-img');
-    const nombrePlato = document.getElementById('nombre-plato');
-    const preview = document.getElementById('preview');
-    const descargarBtn = document.getElementById('descargarBtn');
+  let imagenCargada = false;
 
-    let imagenCargada = false;
-
-    imagenInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        fondo.src = url;
-        platoImg.src = url;
-        imagenCargada = true;
-        descargarBtn.disabled = false;
-      } else {
-        imagenCargada = false;
-        descargarBtn.disabled = true;
-      }
-    });
-
-    nombreInput.addEventListener('input', () => {
-      nombrePlato.textContent = nombreInput.value.toUpperCase();
-    });
-
-    function descargarImagen() {
-      if (!imagenCargada) return;
-
-      preview.style.display = "flex";
-      setTimeout(() => {
-        html2canvas(preview, {
-          width: 1080,
-          height: 1920,
-          scale: 1,
-          useCORS: true
-        }).then(canvas => {
-          const link = document.createElement('a');
-          link.download = 'menu-del-dia.png';
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-        });
-      }, 100);
+  imagenInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      fondo.src = url;
+      platoImg.src = url;
+      imagenCargada = true;
+      descargarBtn.disabled = false;
+    } else {
+      imagenCargada = false;
+      descargarBtn.disabled = true;
     }
+  });
 
-    // Cambio de secciones
-    const navLinks = document.querySelectorAll('.nav-item');
-    const sections = {
-      '#menu': document.getElementById('menu'),
-      '#galeria': document.getElementById('galeria'),
-      '#config': document.getElementById('config')
-    }
+  nombreInput.addEventListener('input', () => {
+    nombrePlato.textContent = nombreInput.value.toUpperCase();
+  });
 
-    navLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault()
-        navLinks.forEach(l => l.classList.remove('active'))
-        link.classList.add('active')
-        const target = link.getAttribute('href')
-        for (const key in sections) {
-          sections[key].style.display = key === target ? 'block' : 'none'
-        }
-      })
-    })
-  </script>
+  // fechaInput.addEventListener('input', () => {
+  //   fecha.textContent = fechaInput.value;
+  // });
+
+  // telefonoInput.addEventListener('input', () => {
+  //   const val = telefonoInput.value.replace(/[^0-9]/g, '').slice(0, 11);
+  //   telefonoInput.value = val;
+  //   telefono.textContent = val;
+  // });
+
+  function descargarImagen() {
+    if (!imagenCargada) return;
+
+    preview.style.display = "flex";
+    setTimeout(() => {
+      html2canvas(preview, {
+        width: 1080,
+        height: 1920,
+        scale: 1,
+        useCORS: true
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'menu-del-dia.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }, 100); // tiempo para asegurar que se renderice bien
+  }
+
+    window.addEventListener('DOMContentLoaded', () => {
+    const hoy = new Date();
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const fechaFormateada = `${dia}.${mes}`;
+    document.getElementById('fecha').textContent = fechaFormateada;
+  });
+</script>
 
 </body>
 </html>
