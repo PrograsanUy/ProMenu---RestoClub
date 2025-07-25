@@ -10,117 +10,110 @@
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
+  <header class="header-container">
+    <div class="header-title">ProMenu - Resto Club</div>
+    <nav class="header-nav">
+      <a href="#" class="nav-item active">Menú</a>
+      <a href="#" class="nav-item"><i class="fas fa-image"></i></a>
+    </nav>
+  </header>
 
-<!-- Agregar dentro del <body> -->
-<header class="header-container">
-  <div class="header-title">ProMenu - Resto Club</div>
-  <nav class="header-nav">
-    <a href="#" class="nav-item active">Menú</a>
-    <!-- <a href="#" class="nav-item">Estado</a> -->
-    <a href="#" class="nav-item">
-      <i class="fas fa-image"></i>
-    </a>
-  </nav>
-</header>
-
-
-<div class="form-wrapper">
-  <input type="file" accept="image/*" id="imagenInput">
-  <input type="text" id="nombreInput" placeholder="Nombre del plato">
-  <!-- <input type="number" id="telefonoInput" placeholder="Teléfono" maxlength="11"> -->
-  <button id="descargarBtn" onclick="descargarImagen()" disabled>Descargar imagen</button>
-</div>
-
-<div class="contenedor" id="preview">
-  <img id="bg" class="fondo" src="" alt="Fondo">
-  <div class="overlay"></div>
-  <div class="contenido">
-    <img class="logo" src="LogoClubBlancoPNG.png" alt="Logo fijo">
-    <div class="titulo">PLATO DEL DÍA</div>
-    <div class="fecha-decorada">
-      <span class="puntos">&#8226;&#8226;&#8226;</span>
-      <span id="fecha">17.07</span>
-      <span class="puntos">&#8226;&#8226;&#8226;</span>
-    </div>
-    <div class="plato-img">
-      <img id="plato-img" src="" alt="Plato">
-    </div>
-    <div class="nombre-plato" id="nombre-plato">MILANESA NAPOLITANA CON PURÉ</div>
-    <div class="telefono" id="telefono">092 228 587</div>
-    <div class="direccion">25 DE MAYO, 550</div>
+  <div class="form-wrapper">
+    <input type="file" accept="image/*" id="imagenInput">
+    <input type="text" id="nombreInput" placeholder="Nombre del plato">
+    <button id="descargarBtn" onclick="descargarImagen()" disabled>Descargar imagen</button>
   </div>
-</div>
 
-<script>
-  const imagenInput = document.getElementById('imagenInput');
-  const nombreInput = document.getElementById('nombreInput');
-  const fondo = document.getElementById('bg');
-  const platoImg = document.getElementById('plato-img');
-  const nombrePlato = document.getElementById('nombre-plato');
-  const fecha = document.getElementById('fecha');
-  const telefono = document.getElementById('telefono');
-  const preview = document.getElementById('preview');
-  const descargarBtn = document.getElementById('descargarBtn');
+  <div class="contenedor" id="preview">
+    <div id="bg" class="fondo"></div>
+    <div class="overlay"></div>
+    <div class="contenido">
+      <img class="logo" src="LogoClubBlancoPNG.png" alt="Logo fijo">
+      <div class="titulo">PLATO DEL DÍA</div>
+      <div class="fecha-decorada">
+        <span class="puntos">&#8226;&#8226;&#8226;</span>
+        <span id="fecha">17.07</span>
+        <span class="puntos">&#8226;&#8226;&#8226;</span>
+      </div>
+      <div class="plato-img">
+        <div id="plato-img" class="plato-img-inner"></div>
+      </div>
+      <div class="nombre-plato" id="nombre-plato">MILANESA NAPOLITANA CON PURÉ</div>
+      <div class="telefono" id="telefono">092 228 587</div>
+      <div class="direccion">25 DE MAYO, 550</div>
+    </div>
+  </div>
 
-  let imagenCargada = false;
+  <script>
+    const imagenInput = document.getElementById('imagenInput');
+    const nombreInput = document.getElementById('nombreInput');
+    const fondo = document.getElementById('bg');
+    const platoImg = document.getElementById('plato-img');
+    const nombrePlato = document.getElementById('nombre-plato');
+    const fecha = document.getElementById('fecha');
+    const telefono = document.getElementById('telefono');
+    const preview = document.getElementById('preview');
+    const descargarBtn = document.getElementById('descargarBtn');
 
-  imagenInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      fondo.src = url;
-      platoImg.src = url;
-      imagenCargada = true;
-      descargarBtn.disabled = false;
-    } else {
-      imagenCargada = false;
-      descargarBtn.disabled = true;
+    let imagenCargada = false;
+
+    imagenInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        fondo.style.backgroundImage = `url(${url})`;
+        platoImg.style.backgroundImage = `url(${url})`;
+        imagenCargada = true;
+        descargarBtn.disabled = false;
+      } else {
+        imagenCargada = false;
+        descargarBtn.disabled = true;
+      }
+    });
+
+    nombreInput.addEventListener('input', () => {
+      nombrePlato.textContent = nombreInput.value.toUpperCase();
+    });
+
+    function descargarImagen() {
+      if (!imagenCargada) return;
+
+      const clon = preview.cloneNode(true);
+      clon.style.display = 'flex';
+      clon.style.position = 'absolute';
+      clon.style.top = '0';
+      clon.style.left = '-9999px';
+      clon.style.width = '1080px';
+      clon.style.height = '1920px';
+      clon.style.transform = 'none';
+      clon.style.transformOrigin = 'initial';
+      clon.id = 'clon-preview';
+
+      document.body.appendChild(clon);
+
+      setTimeout(() => {
+        html2canvas(clon, {
+          width: 1080,
+          height: 1920,
+          scale: 1,
+          useCORS: true
+        }).then(canvas => {
+          const link = document.createElement('a');
+          link.download = 'menu-del-dia.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          document.body.removeChild(clon);
+        });
+      }, 200);
     }
-  });
 
-  nombreInput.addEventListener('input', () => {
-    nombrePlato.textContent = nombreInput.value.toUpperCase();
-  });
-
-  function descargarImagen() {
-    if (!imagenCargada) return;
-
-    // Preparar el contenedor oculto pero visible para html2canvas
-    preview.style.visibility = "hidden";
-    preview.style.position = "absolute";
-    preview.style.top = "-9999px";
-    preview.style.display = "flex";
-
-    setTimeout(() => {
-      html2canvas(preview, {
-        width: 1080,
-        height: 1920,
-        scale: 1,
-        useCORS: true
-      }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = 'menu-del-dia.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-
-        // Restaurar el estado original del contenedor
-        preview.style.display = "none";
-        preview.style.visibility = "visible";
-        preview.style.position = "relative";
-        preview.style.top = "0";
-      });
-    }, 100);
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const hoy = new Date();
-    const dia = String(hoy.getDate()).padStart(2, '0');
-    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-    const fechaFormateada = `${dia}.${mes}`;
-    document.getElementById('fecha').textContent = fechaFormateada;
-  });
-</script>
-
-
+    window.addEventListener('DOMContentLoaded', () => {
+      const hoy = new Date();
+      const dia = String(hoy.getDate()).padStart(2, '0');
+      const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+      const fechaFormateada = `${dia}.${mes}`;
+      document.getElementById('fecha').textContent = fechaFormateada;
+    });
+  </script>
 </body>
 </html>
