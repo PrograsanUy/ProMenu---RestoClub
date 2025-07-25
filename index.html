@@ -54,9 +54,6 @@
 <script>
   const imagenInput = document.getElementById('imagenInput');
   const nombreInput = document.getElementById('nombreInput');
-  const fechaInput = document.getElementById('fechaInput');
-  const telefonoInput = document.getElementById('telefonoInput');
-
   const fondo = document.getElementById('bg');
   const platoImg = document.getElementById('plato-img');
   const nombrePlato = document.getElementById('nombre-plato');
@@ -85,20 +82,15 @@
     nombrePlato.textContent = nombreInput.value.toUpperCase();
   });
 
-  // fechaInput.addEventListener('input', () => {
-  //   fecha.textContent = fechaInput.value;
-  // });
-
-  // telefonoInput.addEventListener('input', () => {
-  //   const val = telefonoInput.value.replace(/[^0-9]/g, '').slice(0, 11);
-  //   telefonoInput.value = val;
-  //   telefono.textContent = val;
-  // });
-
   function descargarImagen() {
     if (!imagenCargada) return;
 
+    // Preparar el contenedor oculto pero visible para html2canvas
+    preview.style.visibility = "hidden";
+    preview.style.position = "absolute";
+    preview.style.top = "-9999px";
     preview.style.display = "flex";
+
     setTimeout(() => {
       html2canvas(preview, {
         width: 1080,
@@ -110,11 +102,17 @@
         link.download = 'menu-del-dia.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
+
+        // Restaurar el estado original del contenedor
+        preview.style.display = "none";
+        preview.style.visibility = "visible";
+        preview.style.position = "relative";
+        preview.style.top = "0";
       });
-    }, 100); // tiempo para asegurar que se renderice bien
+    }, 100);
   }
 
-    window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('DOMContentLoaded', () => {
     const hoy = new Date();
     const dia = String(hoy.getDate()).padStart(2, '0');
     const mes = String(hoy.getMonth() + 1).padStart(2, '0');
@@ -122,6 +120,7 @@
     document.getElementById('fecha').textContent = fechaFormateada;
   });
 </script>
+
 
 </body>
 </html>
