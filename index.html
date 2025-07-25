@@ -76,36 +76,59 @@
     });
 
     function descargarImagen() {
-      if (!imagenCargada) return;
+  if (!imagenCargada) return;
 
-      const clon = preview.cloneNode(true);
-      clon.style.display = 'flex';
-      clon.style.position = 'absolute';
-      clon.style.top = '0';
-      clon.style.left = '-9999px';
-      clon.style.width = '1080px';
-      clon.style.height = '1920px';
-      clon.style.transform = 'none';
-      clon.style.transformOrigin = 'initial';
-      clon.id = 'clon-preview';
+  // Clonamos el contenedor
+  const clon = preview.cloneNode(true);
+  clon.style.display = 'flex';
+  clon.style.position = 'absolute';
+  clon.style.top = '0';
+  clon.style.left = '-9999px';
+  clon.style.width = '1080px';
+  clon.style.height = '1920px';
+  clon.style.transform = 'none';
+  clon.style.transformOrigin = 'initial';
+  clon.id = 'clon-preview';
 
-      document.body.appendChild(clon);
-
-      setTimeout(() => {
-        html2canvas(clon, {
-          width: 1080,
-          height: 1920,
-          scale: 1,
-          useCORS: true
-        }).then(canvas => {
-          const link = document.createElement('a');
-          link.download = 'menu-del-dia.png';
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-          document.body.removeChild(clon);
-        });
-      }, 200);
+  // Estilos internos fijos para asegurar render en celulares
+  const styleFix = document.createElement('style');
+  styleFix.textContent = `
+    #clon-preview .fondo {
+      width: 1080px !important;
+      height: 1920px !important;
     }
+
+    #clon-preview .plato-img {
+      width: 820px !important;
+      height: 820px !important;
+    }
+
+    #clon-preview .plato-img-inner {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  `;
+  clon.appendChild(styleFix);
+
+  document.body.appendChild(clon);
+
+  setTimeout(() => {
+    html2canvas(clon, {
+      width: 1080,
+      height: 1920,
+      scale: 1,
+      useCORS: true
+    }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'menu-del-dia.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+
+      document.body.removeChild(clon);
+    });
+  }, 200);
+}
+
 
     window.addEventListener('DOMContentLoaded', () => {
       const hoy = new Date();
