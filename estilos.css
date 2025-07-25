@@ -10,16 +10,12 @@ body {
   flex-direction: column;
   align-items: center;
 }
-
 .contenedor {
   width: 1080px;
   height: 1920px;
-  transform: scale(0.45);
-  transform-origin: top center;      
   position: relative;
   overflow: hidden;
   display: none;
-  border-radius: 15px;
   margin-top: 20px;
   flex-direction: column;
   align-items: center;
@@ -27,15 +23,14 @@ body {
   flex-shrink: 0;
   background: black;
 }
-
 .fondo {
   position: absolute;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  background-size: cover;
+  background-position: center;
   z-index: 0;
 }
-
 .overlay {
   position: absolute;
   width: 100%;
@@ -43,27 +38,23 @@ body {
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 1;
 }
-
 .contenido {
   position: relative;
   z-index: 2;
   text-align: center;
   width: 100%;
 }
-
 .logo {
   width: 130px;
   position: absolute;
   margin-top: -35px;
   margin-left: -65px;
 }
-
 .titulo {
   font-family: 'Anton', sans-serif;
   font-size: 96px;
   margin-top: 80px;
 }
-
 .fecha-decorada {
   display: flex;
   align-items: center;
@@ -72,13 +63,11 @@ body {
   font-size: 35px;
   margin-bottom: 60px;
 }
-
 .puntos {
   font-size: 55px;
   margin: 0 12px;
   letter-spacing: 4px;
 }
-
 .plato-img {
   width: 820px;
   height: 820px;
@@ -87,13 +76,13 @@ body {
   border: 36px solid rgba(255, 255, 255, 0.3);
   margin: 0 auto 70px;
 }
-
-.plato-img img {
+.plato-img-inner {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
 }
-
 .nombre-plato {
   font-family: 'Josefin Sans', sans-serif;
   font-size: 35px;
@@ -101,7 +90,6 @@ body {
   margin: 0 auto 50px;
   text-transform: uppercase;
 }
-
 .telefono {
   font-family: 'Anton', sans-serif;
   font-size: 65px;
@@ -113,13 +101,11 @@ body {
   display: inline-block;
   margin-bottom: 30px;
 }
-
 .direccion {
   font-family: 'Josefin Sans', sans-serif;
   font-size: 30px;
   text-transform: uppercase;
 }
-
 .form-wrapper {
   background: white;
   color: black;
@@ -134,17 +120,14 @@ body {
   gap: 15px;
   align-items: center;
 }
-
 .form-wrapper input[type="file"],
-.form-wrapper input[type="text"],
-.form-wrapper input[type="number"] {
+.form-wrapper input[type="text"] {
   width: 100%;
   padding: 14px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 8px;
 }
-
 .form-wrapper button {
   padding: 12px 25px;
   font-size: 18px;
@@ -156,43 +139,21 @@ body {
   cursor: pointer;
   width: 100%;
 }
-
 .form-wrapper button:disabled {
   background-color: #666;
   cursor: not-allowed;
 }
-
-@media (max-width: 1115px) {
-  .contenedor {
-    transform: scale(0.30);
-    transform-origin: top center;
-    width: 1080px;
-    height: 1920px;
-  }
-
-  .form-wrapper {
-    width: 90%;
-    padding: 25px 20px;
-  }
+.form-wrapper input[type=file] {
+  cursor: pointer;
+  background-color: #4a7dff;
+  color: white;
+  padding: 10px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
 }
-
-  .form-wrapper input[type=file] {
-    cursor: pointer;
-    background-color: #4a7dff;
-    color: white;
-    padding: 10px 10px;
-    font-size: 14px;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-/*////////////////////////////////////////*/
-
-
-/* Fuera del body, en el <style> o en tu archivo CSS */
 .header-container {
   background-color: #121212;
   color: white;
@@ -203,13 +164,11 @@ body {
   font-family: arial;
   text-align: center;
 }
-
 .header-title {
   font-size: 17px;
   font-weight: bold;
   padding: 13px;
 }
-
 .header-nav {
   display: flex;
   height: 50px;
@@ -217,7 +176,6 @@ body {
   background-color: #f2f2f2;
   padding: 0px 0;
 }
-
 .nav-item {
   margin: 0 15px;
   color: #07305f;
@@ -226,13 +184,10 @@ body {
   font-weight: bold;
   text-decoration: none;
   padding: 0px 20px;
-
 }
-
 .nav-item:hover {
   border-bottom: 2px solid #4a7dff;
 }
-
 .nav-item.active {
   background-color: #e7edff;
   border-bottom: 2px solid #4a7dff;
